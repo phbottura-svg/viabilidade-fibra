@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vonixx Fibra — Verifique sua cobertura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #070D17;
+    --bg-deep: #040810;
+    --surface: #101A2C;
+    --surface-2: #16223A;
+    --line: #233252;
+    --fiber: #00E5A8;
+    --fiber-dim: #00805f;
+    --amber: #FFB020;
+    --red: #FF5C5C;
+    --text: #E8EDF7;
+    --muted: #8492AE;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(circle at 20% -10%, #0c1830 0%, var(--bg) 45%, var(--bg-deep) 100%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* fiber strand background */
+  .strands{
+    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.35;
+  }
+  .strands svg{width:100%;height:100%;}
+
+  .wrap{
+    position:relative; z-index:1;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom: 48px;
+  }
+  .brand-mark{
+    width:10px;height:10px;border-radius:50%;
+    background: var(--fiber);
+    box-shadow: 0 0 12px 2px var(--fiber);
+  }
+  .brand-name{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    letter-spacing:0.04em;
+    font-size:15px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size: 42px;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+    margin:0 0 14px;
+  }
+  h1 span{ color: var(--fiber); }
+
+  .sub{
+    color: var(--muted);
+    font-size:16px;
+    line-height:1.55;
+    margin:0 0 40px;
+    max-width: 46ch;
+  }
+
+  .card{
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px;
+    position: relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, var(--fiber-dim), transparent);
+  }
+
+  label{
+    display:block;
+    font-size:12px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color: var(--muted);
+    margin-bottom:8px;
+    font-weight:500;
+  }
+
+  .row{ display:flex; gap:12px; }
+  .field{ margin-bottom:18px; flex:1; }
+  .field.small{ flex: 0 0 110px; }
+
+  input{
+    width:100%;
+    background: var(--bg-deep);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family:'JetBrains Mono', monospace;
+    font-size:16px;
+    padding: 13px 14px;
+    border-radius: 10px;
+    outline:none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  input::placeholder{ color:#4A5876; }
+  input:focus{
+    border-color: var(--fiber);
+    box-shadow: 0 0 0 3px rgba(0,229,168,0.12);
+  }
+
+  button{
+    width:100%;
+    background: var(--fiber);
+    color: #03150F;
+    border:none;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    padding:15px;
+    border-radius: 10px;
+    cursor:pointer;
+    letter-spacing:0.01em;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
+    box-shadow: 0 4px 24px -6px rgba(0,229,168,0.5);
+  }
+  button:hover{ transform: translateY(-1px); }
+  button:active{ transform: translateY(0); }
+  button:disabled{ opacity:0.55; cursor:default; transform:none; }
+
+  /* pulse / scanning state */
+  .pulse-track{
+    height:3px;
+    background: var(--line);
+    border-radius: 2px;
+    margin-top: 22px;
+    overflow:hidden;
+    display:none;
+    position:relative;
+  }
+  .pulse-track.active{ display:block; }
+  .pulse-dot{
+    position:absolute; top:-3px; left:0;
+    width:34px; height:9px;
+    border-radius:5px;
+    background: linear-gradient(90deg, transparent, var(--fiber));
+    box-shadow: 0 0 10px 2px var(--fiber);
+    animation: travel 1.1s linear infinite;
+  }
+  @keyframes travel{
+    0%{ left:-10%; }
+    100%{ left: 105%; }
+  }
+  .pulse-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color: var(--muted);
+    margin-top:10px;
+    display:none;
+  }
+  .pulse-label.active{ display:block; }
+
+  /* result panel */
+  .result{
+    margin-top:22px;
+    border-radius: 14px;
+    padding: 20px;
+    display:none;
+    animation: rise .35s ease;
+  }
+  .result.active{ display:block; }
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(6px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  .result-status{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:18px;
+    margin-bottom:8px;
+  }
+  .dot{ width:9px; height:9px; border-radius:50%; flex:none; }
+  .result.ok{ background: rgba(0,229,168,0.08); border:1px solid rgba(0,229,168,0.35); }
+  .result.ok .dot{ background:var(--fiber); box-shadow:0 0 10px 2px var(--fiber); }
+  .result.ok .result-status{ color: var(--fiber); }
+
+  .result.partial{ background: rgba(255,176,32,0.08); border:1px solid rgba(255,176,32,0.35); }
+  .result.partial .dot{ background:var(--amber); box-shadow:0 0 10px 2px var(--amber); }
+  .result.partial .result-status{ color: var(--amber); }
+
+  .result.no{ background: rgba(255,92,92,0.08); border:1px solid rgba(255,92,92,0.35); }
+  .result.no .dot{ background:var(--red); }
+  .result.no .result-status{ color: var(--red); }
+
+  .result-msg{ color: var(--text); font-size:14.5px; line-height:1.5; margin-bottom: 4px;}
+  .result-addr{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color: var(--muted);
+    margin-top:10px;
+    padding-top:10px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .cta-wa{
+    display:inline-block; margin-top:16px;
+    background: var(--fiber);
+    color:#03150F;
+    text-decoration:none;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    padding:11px 18px;
+    border-radius:8px;
+  }
+
+  .foot{
+    margin-top: 36px;
+    color: #4A5876;
+    font-size:12.5px;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="strands">
+  <svg viewBox="0 0 600 900" preserveAspectRatio="none">
+    <path d="M -50 100 C 150 50, 250 250, 600 180" stroke="#00E5A8" stroke-width="1" fill="none" opacity="0.5"/>
+    <path d="M -50 400 C 200 350, 300 600, 650 500" stroke="#00E5A8" stroke-width="1" fill="none" opacity="0.35"/>
+    <path d="M -50 750 C 180 700, 320 950, 650 820" stroke="#00E5A8" stroke-width="1" fill="none" opacity="0.3"/>
+  </svg>
+</div>
+
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-mark"></div>
+    <div class="brand-name">Vonixx · Fibra TIM Ultra</div>
+  </div>
+
+  <h1>Sua rua já recebe <span>luz</span>?</h1>
+  <p class="sub">Digite seu CEP e número. Consultamos a base oficial de viabilidade técnica da rede e respondemos na hora.</p>
+
+  <div class="card">
+    <div class="row">
+      <div class="field">
+        <label for="cep">CEP</label>
+        <input id="cep" type="text" inputmode="numeric" placeholder="83601-030" maxlength="9">
+      </div>
+      <div class="field small">
+        <label for="numero">Número</label>
+        <input id="numero" type="text" inputmode="numeric" placeholder="123">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:22px;">
+      <label for="logradouro">Rua (opcional, melhora a precisão)</label>
+      <input id="logradouro" type="text" placeholder="Rua XV de Novembro">
+    </div>
+
+    <button id="btn" onclick="verificar()">Verificar cobertura</button>
+
+    <div class="pulse-track" id="pulseTrack"><div class="pulse-dot"></div></div>
+    <div class="pulse-label" id="pulseLabel">consultando a malha de fibra...</div>
+
+    <div class="result" id="result">
+      <div class="result-status" id="resultStatus"><span class="dot"></span><span id="resultTitle"></span></div>
+      <div class="result-msg" id="resultMsg"></div>
+      <div class="result-addr" id="resultAddr" style="display:none;"></div>
+      <a class="cta-wa" id="ctaWa" href="#" target="_blank" style="display:none;">Falar com um consultor →</a>
+    </div>
+  </div>
+
+  <p class="foot">Cobertura V.tal · Rede TIM Ultra Fibra — Paraná</p>
+</div>
+
+<script>
+// ===== CONFIGURAÇÃO =====
+// Troque pela URL da sua API depois do deploy no Coolify, ex:
+// const API_URL = "https://viabilidade.vonixxsc.com.br";
+const API_URL = "http://localhost:8000";
+const WHATSAPP_NUMERO = "5544900000000"; // troque pelo número real do WhatsApp comercial
+
+function onlyDigits(s){ return (s||"").replace(/\D/g,""); }
+
+async function verificar(){
+  const cepInput = document.getElementById('cep');
+  const numeroInput = document.getElementById('numero');
+  const logradouroInput = document.getElementById('logradouro');
+  const btn = document.getElementById('btn');
+  const pulseTrack = document.getElementById('pulseTrack');
+  const pulseLabel = document.getElementById('pulseLabel');
+  const result = document.getElementById('result');
+
+  const cep = onlyDigits(cepInput.value);
+  const numero = numeroInput.value.trim();
+  const logradouro = logradouroInput.value.trim();
+
+  if(cep.length !== 8){
+    cepInput.style.borderColor = '#FF5C5C';
+    cepInput.focus();
+    return;
+  }
+
+  result.className = 'result';
+  btn.disabled = true;
+  pulseTrack.className = 'pulse-track active';
+  pulseLabel.className = 'pulse-label active';
+
+  try{
+    const params = new URLSearchParams({ cep, numero, logradouro });
+    const resp = await fetch(`${API_URL}/verificar?${params.toString()}`);
+    const data = await resp.json();
+    await new Promise(r => setTimeout(r, 600)); // deixa a animação respirar
+    mostrarResultado(data);
+  }catch(e){
+    mostrarResultado({status:'erro', mensagem:'Não conseguimos consultar agora. Tente novamente em instantes.'});
+  }finally{
+    btn.disabled = false;
+    pulseTrack.className = 'pulse-track';
+    pulseLabel.className = 'pulse-label';
+  }
+}
+
+function mostrarResultado(data){
+  const result = document.getElementById('result');
+  const title = document.getElementById('resultTitle');
+  const msg = document.getElementById('resultMsg');
+  const addr = document.getElementById('resultAddr');
+  const ctaWa = document.getElementById('ctaWa');
+
+  let cls = 'no';
+  let titleText = 'Sem cobertura por aqui';
+
+  if(data.status === 'viavel'){
+    cls = 'ok';
+    titleText = 'Endereço viável';
+  } else if(data.status === 'regiao_parcial'){
+    cls = 'partial';
+    titleText = 'Região coberta — confirmando endereço';
+  } else if(data.status === 'erro'){
+    cls = 'no';
+    titleText = 'Não entendi o CEP';
+  }
+
+  result.className = 'result active ' + cls;
+  title.textContent = titleText;
+  msg.textContent = data.mensagem || '';
+
+  if(data.endereco){
+    const e = data.endereco;
+    const partes = [e.logradouro, e.numero, e.bairro, e.municipio, e.uf].filter(Boolean);
+    addr.textContent = partes.join(' · ');
+    addr.style.display = 'block';
+  } else {
+    addr.style.display = 'none';
+  }
+
+  if(data.status === 'viavel' || data.status === 'regiao_parcial'){
+    const texto = encodeURIComponent(`Olá! Verifiquei no site e meu endereço tem viabilidade de fibra. Quero saber mais sobre os planos.`);
+    ctaWa.href = `https://wa.me/${WHATSAPP_NUMERO}?text=${texto}`;
+    ctaWa.style.display = 'inline-block';
+  } else {
+    ctaWa.style.display = 'none';
+  }
+}
+
+document.getElementById('cep').addEventListener('input', function(){
+  this.style.borderColor = '';
+  let v = onlyDigits(this.value).slice(0,8);
+  if(v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
+  this.value = v;
+});
+
+document.querySelectorAll('input').forEach(inp=>{
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') verificar(); });
+});
+</script>
+
+</body>
+</html>
