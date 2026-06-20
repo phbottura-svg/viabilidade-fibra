@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "cobertura.db")
+DB_PATH = os.environ.get("DB_PATH", "/data/db/cobertura.db")
 
 app = FastAPI(title="API Viabilidade Bottura Telecom")
 

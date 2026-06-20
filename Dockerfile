@@ -7,9 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py .
 COPY static/ ./static/
-# cobertura.db é provido via volume externo — o touch cria o arquivo vazio
-# para que o Docker monte o volume como arquivo (não como diretório)
-RUN touch /app/cobertura.db
+# cobertura.db é provido via volume em /data/db/cobertura.db (não vem do Git)
+RUN mkdir -p /data/db
 
 EXPOSE 8000
 
