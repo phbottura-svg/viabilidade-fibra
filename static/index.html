@@ -8,22 +8,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #070D17;
-    --bg-deep: #040810;
-    --surface: #101A2C;
-    --surface-2: #16223A;
-    --line: #233252;
-    --fiber: #00E5A8;
-    --fiber-dim: #00805f;
+    --bg: #06080F;
+    --bg-deep: #020408;
+    --surface: #0D1220;
+    --surface-2: #111828;
+    --line: #1E2A42;
+    --fiber: #E30613;
+    --fiber-dim: #8B0009;
+    --tim-blue: #00338D;
+    --tim-blue-dim: #001F54;
     --amber: #FFB020;
     --red: #FF5C5C;
     --text: #E8EDF7;
-    --muted: #8492AE;
+    --muted: #7A8AA8;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background: radial-gradient(circle at 20% -10%, #0c1830 0%, var(--bg) 45%, var(--bg-deep) 100%);
+    background: radial-gradient(circle at 20% -10%, #0a0f24 0%, var(--bg) 45%, var(--bg-deep) 100%);
     color: var(--text);
     font-family: 'Inter', sans-serif;
     min-height:100vh;
@@ -51,7 +53,7 @@
   .brand-mark{
     width:10px;height:10px;border-radius:50%;
     background: var(--fiber);
-    box-shadow: 0 0 12px 2px var(--fiber);
+    box-shadow: 0 0 12px 2px rgba(227,6,19,0.7);
   }
   .brand-name{
     font-family:'Space Grotesk', sans-serif;
@@ -80,7 +82,7 @@
   .step-chip.active{
     border-color: var(--fiber);
     color: var(--fiber);
-    background: rgba(0,229,168,0.08);
+    background: rgba(227,6,19,0.08);
   }
   .step-sep{ color: var(--line); font-size:14px; }
 
@@ -145,13 +147,13 @@
   input::placeholder{ color:#4A5876; }
   input:focus{
     border-color: var(--fiber);
-    box-shadow: 0 0 0 3px rgba(0,229,168,0.12);
+    box-shadow: 0 0 0 3px rgba(227,6,19,0.15);
   }
 
   button{
     width:100%;
-    background: var(--fiber);
-    color: #03150F;
+    background: linear-gradient(135deg, var(--fiber) 0%, #C0000F 100%);
+    color: #fff;
     border:none;
     font-family:'Space Grotesk', sans-serif;
     font-weight:700;
@@ -161,7 +163,7 @@
     cursor:pointer;
     letter-spacing:0.01em;
     transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
-    box-shadow: 0 4px 24px -6px rgba(0,229,168,0.5);
+    box-shadow: 0 4px 24px -6px rgba(227,6,19,0.55);
   }
   button:hover{ transform: translateY(-1px); }
   button:active{ transform: translateY(0); }
@@ -220,7 +222,7 @@
     margin-bottom:8px;
   }
   .dot{ width:9px; height:9px; border-radius:50%; flex:none; }
-  .result.ok{ background: rgba(0,229,168,0.08); border:1px solid rgba(0,229,168,0.35); }
+  .result.ok{ background: rgba(227,6,19,0.08); border:1px solid rgba(227,6,19,0.35); }
   .result.ok .dot{ background:var(--fiber); box-shadow:0 0 10px 2px var(--fiber); }
   .result.ok .result-status{ color: var(--fiber); }
 
@@ -244,15 +246,18 @@
 
   .cta-wa{
     display:inline-block; margin-top:16px;
-    background: var(--fiber);
-    color:#03150F;
+    background: var(--tim-blue);
+    color:#fff;
     text-decoration:none;
     font-family:'Space Grotesk', sans-serif;
     font-weight:700;
     font-size:14px;
     padding:11px 18px;
     border-radius:8px;
+    box-shadow: 0 4px 16px -4px rgba(0,51,141,0.5);
+    transition: transform .12s ease;
   }
+  .cta-wa:hover{ transform: translateY(-1px); }
 
   .foot{
     margin-top: 36px;
@@ -266,9 +271,9 @@
 
 <div class="strands">
   <svg viewBox="0 0 600 900" preserveAspectRatio="none">
-    <path d="M -50 100 C 150 50, 250 250, 600 180" stroke="#00E5A8" stroke-width="1" fill="none" opacity="0.5"/>
-    <path d="M -50 400 C 200 350, 300 600, 650 500" stroke="#00E5A8" stroke-width="1" fill="none" opacity="0.35"/>
-    <path d="M -50 750 C 180 700, 320 950, 650 820" stroke="#00E5A8" stroke-width="1" fill="none" opacity="0.3"/>
+    <path d="M -50 100 C 150 50, 250 250, 600 180" stroke="#E30613" stroke-width="1" fill="none" opacity="0.3"/>
+    <path d="M -50 400 C 200 350, 300 600, 650 500" stroke="#00338D" stroke-width="1" fill="none" opacity="0.25"/>
+    <path d="M -50 750 C 180 700, 320 950, 650 820" stroke="#E30613" stroke-width="1" fill="none" opacity="0.2"/>
   </svg>
 </div>
 
@@ -312,8 +317,8 @@
       <div class="result-status" id="resultStatus"><span class="dot"></span><span id="resultTitle"></span></div>
       <div class="result-msg" id="resultMsg"></div>
       <div class="result-addr" id="resultAddr" style="display:none;"></div>
-      <div id="passo2block" style="display:none; margin-top:18px; padding:16px; border-radius:12px; background:rgba(0,229,168,0.06); border:1px solid rgba(0,229,168,0.25);">
-        <div style="font-family:'Space Grotesk',sans-serif; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--fiber); font-weight:600; margin-bottom:8px;">Passo 2 — Contratar</div>
+      <div id="passo2block" style="display:none; margin-top:18px; padding:16px; border-radius:12px; background:rgba(0,51,141,0.08); border:1px solid rgba(0,51,141,0.3);">
+        <div style="font-family:'Space Grotesk',sans-serif; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:#4A7FD4; font-weight:600; margin-bottom:8px;">Passo 2 — Contratar</div>
         <div style="font-size:14px; color:var(--text); margin-bottom:12px;">Fale com um consultor agora e finalize a contratação do seu plano de fibra.</div>
         <a class="cta-wa" id="ctaWa" href="#" target="_blank" style="display:inline-block;">Falar com consultor no WhatsApp →</a>
       </div>
