@@ -3,295 +3,374 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vonixx Fibra — Verifique sua cobertura</title>
+<title>TIM Ultra Fibra — Verifique a cobertura</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #06080F;
-    --bg-deep: #020408;
-    --surface: #0D1220;
-    --surface-2: #111828;
-    --line: #1E2A42;
-    --fiber: #E30613;
-    --fiber-dim: #8B0009;
-    --tim-blue: #00338D;
-    --tim-blue-dim: #001F54;
-    --amber: #FFB020;
-    --red: #FF5C5C;
-    --text: #E8EDF7;
-    --muted: #7A8AA8;
+    --blue-900: #001F5C;
+    --blue-800: #00338D;
+    --blue-700: #0047BB;
+    --blue-600: #0055D4;
+    --blue-400: #3D7FE8;
+    --blue-200: #B8D0F7;
+    --blue-100: #DCE9FB;
+    --blue-50:  #EEF4FD;
+    --tim-red:  #E30613;
+    --green:    #00A651;
+    --amber:    #F59E0B;
+    --text:     #0A1628;
+    --text-2:   #3A4A6B;
+    --muted:    #6B7A99;
+    --border:   #C8D8F0;
+    --white:    #FFFFFF;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background: radial-gradient(circle at 20% -10%, #0a0f24 0%, var(--bg) 45%, var(--bg-deep) 100%);
+    background: #F4F8FF;
     color: var(--text);
     font-family: 'Inter', sans-serif;
     min-height:100vh;
-    position:relative;
-    overflow-x:hidden;
   }
 
-  /* fiber strand background */
-  .strands{
-    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.35;
+  /* Header azul escuro */
+  .header{
+    background: var(--blue-900);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
-  .strands svg{width:100%;height:100%;}
-
-  .wrap{
-    position:relative; z-index:1;
-    max-width: 560px;
-    margin: 0 auto;
-    padding: 56px 24px 80px;
+  .header-brand{
+    display:flex; align-items:center; gap:12px;
   }
-
-  .brand{
-    display:flex; align-items:center; gap:10px;
-    margin-bottom: 48px;
+  .tim-logo{
+    display:flex; align-items:center; gap:6px;
   }
-  .brand-mark{
-    width:10px;height:10px;border-radius:50%;
-    background: var(--fiber);
-    box-shadow: 0 0 12px 2px rgba(227,6,19,0.7);
+  .tim-bars{
+    display:flex; flex-direction:column; gap:3px;
   }
-  .brand-name{
-    font-family:'Space Grotesk', sans-serif;
-    font-weight:600;
+  .tim-bar{
+    height:4px; border-radius:2px; background: var(--tim-red);
+  }
+  .tim-bar:nth-child(1){ width:20px; }
+  .tim-bar:nth-child(2){ width:14px; }
+  .tim-bar:nth-child(3){ width:8px; }
+  .tim-text{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:800;
+    font-size:22px;
+    color:#fff;
     letter-spacing:0.04em;
-    font-size:15px;
-    color: var(--muted);
-    text-transform: uppercase;
   }
-
-  .steps{
-    display:flex; gap:10px; margin-bottom:20px; align-items:center;
+  .header-divider{
+    width:1px; height:28px;
+    background: rgba(255,255,255,0.2);
   }
-  .step-chip{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:0.06em;
+  .header-sub{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color: rgba(255,255,255,0.6);
+    letter-spacing:0.05em;
     text-transform:uppercase;
-    padding:5px 12px;
-    border-radius:20px;
-    border:1px solid var(--line);
-    color: var(--muted);
-    background: var(--surface);
-  }
-  .step-chip.active{
-    border-color: var(--fiber);
-    color: var(--fiber);
-    background: rgba(227,6,19,0.08);
-  }
-  .step-sep{ color: var(--line); font-size:14px; }
-
-  h1{
-    font-family:'Space Grotesk', sans-serif;
-    font-weight:700;
-    font-size: 42px;
-    line-height:1.08;
-    letter-spacing:-0.01em;
-    margin:0 0 14px;
-  }
-  h1 span{ color: var(--fiber); }
-
-  .sub{
-    color: var(--muted);
-    font-size:16px;
-    line-height:1.55;
-    margin:0 0 40px;
-    max-width: 46ch;
   }
 
-  .card{
-    background: linear-gradient(180deg, var(--surface), var(--surface-2));
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 28px;
-    position: relative;
+  /* Hero */
+  .hero{
+    background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%);
+    padding: 52px 24px 64px;
+    text-align:center;
+    position:relative;
     overflow:hidden;
   }
-  .card::before{
+  .hero::before{
     content:"";
-    position:absolute; top:0; left:0; right:0; height:1px;
-    background: linear-gradient(90deg, transparent, var(--fiber-dim), transparent);
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(61,127,232,0.3) 0%, transparent 65%);
+  }
+  .hero-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius:20px;
+    padding: 6px 16px;
+    font-size:12px;
+    font-weight:600;
+    color:rgba(255,255,255,0.85);
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    margin-bottom:24px;
+    position:relative;
+  }
+  .hero-badge-dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--tim-red);
+    box-shadow:0 0 8px 2px rgba(227,6,19,0.6);
+  }
+  .hero h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:800;
+    font-size:38px;
+    line-height:1.1;
+    color:#fff;
+    margin:0 0 16px;
+    position:relative;
+    letter-spacing:-0.01em;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color: var(--blue-200);
+  }
+  .hero-sub{
+    font-size:16px;
+    color:rgba(255,255,255,0.7);
+    max-width:44ch;
+    margin:0 auto;
+    line-height:1.6;
+    position:relative;
+  }
+
+  /* Steps */
+  .steps-wrap{
+    display:flex; gap:0; max-width:600px; margin:0 auto;
+    padding:0 24px;
+    transform: translateY(-1px);
+    position:relative; z-index:2;
+  }
+  .step-tab{
+    flex:1;
+    padding:14px 16px;
+    background:#fff;
+    border:1px solid var(--border);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+    display:flex; align-items:center; gap:8px;
+    transition: all .2s ease;
+    cursor:default;
+  }
+  .step-tab:first-child{ border-radius:0 0 0 12px; border-right:none; }
+  .step-tab:last-child{ border-radius:0 0 12px 0; }
+  .step-tab.active{
+    background: var(--blue-800);
+    color:#fff;
+    border-color: var(--blue-800);
+  }
+  .step-num{
+    width:22px;height:22px;border-radius:50%;
+    background:rgba(255,255,255,0.2);
+    font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    flex:none;
+  }
+  .step-tab:not(.active) .step-num{
+    background:var(--blue-100);
+    color:var(--blue-800);
+  }
+
+  /* Card principal */
+  .main{
+    max-width:600px;
+    margin:0 auto;
+    padding:28px 24px 60px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:28px;
+    box-shadow:0 4px 24px rgba(0,51,141,0.08);
   }
 
   label{
     display:block;
     font-size:12px;
-    letter-spacing:0.06em;
+    letter-spacing:0.05em;
     text-transform:uppercase;
-    color: var(--muted);
-    margin-bottom:8px;
-    font-weight:500;
+    color:var(--muted);
+    margin-bottom:7px;
+    font-weight:600;
   }
-
   .row{ display:flex; gap:12px; }
-  .field{ margin-bottom:18px; flex:1; }
-  .field.small{ flex: 0 0 110px; }
+  .field{ margin-bottom:16px; flex:1; }
+  .field.small{ flex:0 0 110px; }
 
   input{
     width:100%;
-    background: var(--bg-deep);
-    border: 1px solid var(--line);
-    color: var(--text);
-    font-family:'JetBrains Mono', monospace;
+    background:#fff;
+    border:1.5px solid var(--border);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
     font-size:16px;
-    padding: 13px 14px;
-    border-radius: 10px;
+    padding:12px 14px;
+    border-radius:10px;
     outline:none;
-    transition: border-color .15s ease, box-shadow .15s ease;
+    transition:border-color .15s, box-shadow .15s;
   }
-  input::placeholder{ color:#4A5876; }
+  input::placeholder{ color:#A8B5CC; }
   input:focus{
-    border-color: var(--fiber);
-    box-shadow: 0 0 0 3px rgba(227,6,19,0.15);
+    border-color:var(--blue-600);
+    box-shadow:0 0 0 3px rgba(0,85,212,0.12);
   }
 
   button{
     width:100%;
-    background: linear-gradient(135deg, var(--fiber) 0%, #C0000F 100%);
-    color: #fff;
+    background:linear-gradient(135deg, var(--blue-700) 0%, var(--blue-900) 100%);
+    color:#fff;
     border:none;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:'Space Grotesk',sans-serif;
     font-weight:700;
     font-size:16px;
     padding:15px;
-    border-radius: 10px;
+    border-radius:10px;
     cursor:pointer;
     letter-spacing:0.01em;
-    transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
-    box-shadow: 0 4px 24px -6px rgba(227,6,19,0.55);
+    transition:transform .12s, box-shadow .12s, opacity .15s;
+    box-shadow:0 4px 20px -4px rgba(0,51,141,0.4);
   }
-  button:hover{ transform: translateY(-1px); }
-  button:active{ transform: translateY(0); }
+  button:hover{ transform:translateY(-1px); box-shadow:0 6px 24px -4px rgba(0,51,141,0.5); }
+  button:active{ transform:translateY(0); }
   button:disabled{ opacity:0.55; cursor:default; transform:none; }
 
-  /* pulse / scanning state */
+  /* Loading */
   .pulse-track{
-    height:3px;
-    background: var(--line);
-    border-radius: 2px;
-    margin-top: 22px;
-    overflow:hidden;
-    display:none;
-    position:relative;
+    height:3px; background:var(--blue-100);
+    border-radius:2px; margin-top:20px;
+    overflow:hidden; display:none; position:relative;
   }
   .pulse-track.active{ display:block; }
   .pulse-dot{
-    position:absolute; top:-3px; left:0;
-    width:34px; height:9px;
-    border-radius:5px;
-    background: linear-gradient(90deg, transparent, var(--fiber));
-    box-shadow: 0 0 10px 2px var(--fiber);
-    animation: travel 1.1s linear infinite;
+    position:absolute; top:-2px; left:0;
+    width:40px; height:7px; border-radius:4px;
+    background:linear-gradient(90deg, transparent, var(--blue-600));
+    animation:travel 1.1s linear infinite;
   }
-  @keyframes travel{
-    0%{ left:-10%; }
-    100%{ left: 105%; }
-  }
+  @keyframes travel{ 0%{left:-10%} 100%{left:105%} }
   .pulse-label{
-    font-family:'JetBrains Mono', monospace;
-    font-size:12px;
-    color: var(--muted);
-    margin-top:10px;
-    display:none;
+    font-size:12px; color:var(--muted);
+    margin-top:10px; display:none;
   }
   .pulse-label.active{ display:block; }
 
-  /* result panel */
+  /* Resultado */
   .result{
-    margin-top:22px;
-    border-radius: 14px;
-    padding: 20px;
-    display:none;
-    animation: rise .35s ease;
+    margin-top:20px; border-radius:12px;
+    padding:18px; display:none;
+    animation:rise .3s ease;
   }
   .result.active{ display:block; }
   @keyframes rise{
-    from{ opacity:0; transform: translateY(6px); }
-    to{ opacity:1; transform: translateY(0); }
+    from{opacity:0;transform:translateY(5px)}
+    to{opacity:1;transform:translateY(0)}
   }
   .result-status{
-    display:flex; align-items:center; gap:10px;
-    font-family:'Space Grotesk', sans-serif;
-    font-weight:600;
-    font-size:18px;
-    margin-bottom:8px;
+    display:flex;align-items:center;gap:10px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:17px;margin-bottom:6px;
   }
-  .dot{ width:9px; height:9px; border-radius:50%; flex:none; }
-  .result.ok{ background: rgba(227,6,19,0.08); border:1px solid rgba(227,6,19,0.35); }
-  .result.ok .dot{ background:var(--fiber); box-shadow:0 0 10px 2px var(--fiber); }
-  .result.ok .result-status{ color: var(--fiber); }
+  .dot{width:9px;height:9px;border-radius:50%;flex:none;}
 
-  .result.partial{ background: rgba(255,176,32,0.08); border:1px solid rgba(255,176,32,0.35); }
-  .result.partial .dot{ background:var(--amber); box-shadow:0 0 10px 2px var(--amber); }
-  .result.partial .result-status{ color: var(--amber); }
+  .result.ok{ background:#EBF7F0; border:1.5px solid #A3DDB9; }
+  .result.ok .dot{ background:var(--green); box-shadow:0 0 8px 2px rgba(0,166,81,0.4); }
+  .result.ok .result-status{ color:#007A3D; }
 
-  .result.no{ background: rgba(255,92,92,0.08); border:1px solid rgba(255,92,92,0.35); }
-  .result.no .dot{ background:var(--red); }
-  .result.no .result-status{ color: var(--red); }
+  .result.partial{ background:#FFF8E6; border:1.5px solid #F5D98A; }
+  .result.partial .dot{ background:var(--amber); }
+  .result.partial .result-status{ color:#B45309; }
 
-  .result-msg{ color: var(--text); font-size:14.5px; line-height:1.5; margin-bottom: 4px;}
+  .result.no{ background:#FFF0F0; border:1.5px solid #F5BABA; }
+  .result.no .dot{ background:var(--tim-red); }
+  .result.no .result-status{ color:#B00010; }
+
+  .result-msg{ color:var(--text-2); font-size:14px; line-height:1.5; }
   .result-addr{
-    font-family:'JetBrains Mono', monospace;
-    font-size:12.5px;
-    color: var(--muted);
-    margin-top:10px;
-    padding-top:10px;
-    border-top: 1px dashed var(--line);
+    font-size:12.5px; color:var(--muted);
+    margin-top:10px; padding-top:10px;
+    border-top:1px dashed var(--border);
   }
 
-  .cta-wa{
-    display:inline-block; margin-top:16px;
-    background: var(--tim-blue);
-    color:#fff;
-    text-decoration:none;
-    font-family:'Space Grotesk', sans-serif;
-    font-weight:700;
-    font-size:14px;
-    padding:11px 18px;
-    border-radius:8px;
-    box-shadow: 0 4px 16px -4px rgba(0,51,141,0.5);
-    transition: transform .12s ease;
+  /* Passo 2 */
+  .passo2{
+    display:none; margin-top:20px;
+    background:linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%);
+    border-radius:14px; padding:20px;
+    box-shadow:0 8px 28px -6px rgba(0,51,141,0.35);
   }
-  .cta-wa:hover{ transform: translateY(-1px); }
+  .passo2-label{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11px;letter-spacing:0.07em;
+    text-transform:uppercase;color:var(--blue-200);
+    font-weight:600;margin-bottom:6px;
+  }
+  .passo2-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:17px;
+    color:#fff;margin-bottom:4px;
+  }
+  .passo2-sub{
+    font-size:13px;color:rgba(255,255,255,0.65);
+    margin-bottom:16px;
+  }
+  .cta-wa{
+    display:inline-flex;align-items:center;gap:9px;
+    background:#fff;
+    color:var(--blue-800);
+    text-decoration:none;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:14px;
+    padding:12px 20px;border-radius:8px;
+    transition:transform .12s,box-shadow .12s;
+    box-shadow:0 2px 10px rgba(0,0,0,0.12);
+  }
+  .cta-wa:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,0.18);}
+  .wa-icon{ width:18px;height:18px;fill:#25D366; flex:none; }
 
   .foot{
-    margin-top: 36px;
-    color: #4A5876;
-    font-size:12.5px;
-    text-align:center;
+    margin-top:32px; color:var(--muted);
+    font-size:12px; text-align:center;
   }
 </style>
 </head>
 <body>
 
-<div class="strands">
-  <svg viewBox="0 0 600 900" preserveAspectRatio="none">
-    <path d="M -50 100 C 150 50, 250 250, 600 180" stroke="#E30613" stroke-width="1" fill="none" opacity="0.3"/>
-    <path d="M -50 400 C 200 350, 300 600, 650 500" stroke="#00338D" stroke-width="1" fill="none" opacity="0.25"/>
-    <path d="M -50 750 C 180 700, 320 950, 650 820" stroke="#E30613" stroke-width="1" fill="none" opacity="0.2"/>
-  </svg>
+<header class="header">
+  <div class="header-brand">
+    <div class="tim-logo">
+      <div class="tim-bars">
+        <div class="tim-bar"></div>
+        <div class="tim-bar"></div>
+        <div class="tim-bar"></div>
+      </div>
+      <div class="tim-text">TIM</div>
+    </div>
+    <div class="header-divider"></div>
+    <div class="header-sub">Ultra Fibra</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    Verificação instantânea
+  </div>
+  <h1>CONTRATAR<br><em>TIM ULTRA FIBRA</em></h1>
+  <p class="hero-sub">Informe seu endereço e descubra em segundos se a fibra TIM já chegou até você.</p>
 </div>
 
-<div class="wrap">
-  <div class="brand">
-    <div class="brand-mark"></div>
-    <div class="brand-name">Vonixx · Fibra TIM Ultra</div>
+<div class="steps-wrap">
+  <div class="step-tab active" id="chip1">
+    <span class="step-num">1</span> Verificar endereço
   </div>
-
-  <div class="steps">
-    <span class="step-chip active" id="chip1">Passo 1 — Verificar endereço</span>
-    <span class="step-sep">→</span>
-    <span class="step-chip" id="chip2">Passo 2 — Contratar</span>
+  <div class="step-tab" id="chip2">
+    <span class="step-num">2</span> Falar e contratar
   </div>
+</div>
 
-  <h1>Fibra disponível no seu <span>endereço</span>?</h1>
-  <p class="sub">Digite seu CEP e número — em segundos você descobre se a rede já chegou até você.</p>
-
+<div class="main">
   <div class="card">
     <div class="row">
       <div class="field">
@@ -304,24 +383,29 @@
       </div>
     </div>
     <div class="field" style="margin-bottom:22px;">
-      <label for="logradouro">Rua (opcional, melhora a precisão)</label>
+      <label for="logradouro">Rua (opcional — melhora a precisão)</label>
       <input id="logradouro" type="text" placeholder="Rua XV de Novembro">
     </div>
 
-    <button id="btn" onclick="verificar()">Verificar cobertura</button>
+    <button id="btn" onclick="verificar()">Verificar disponibilidade</button>
 
     <div class="pulse-track" id="pulseTrack"><div class="pulse-dot"></div></div>
-    <div class="pulse-label" id="pulseLabel">consultando a malha de fibra...</div>
+    <div class="pulse-label" id="pulseLabel">Consultando a base de cobertura TIM...</div>
 
     <div class="result" id="result">
       <div class="result-status" id="resultStatus"><span class="dot"></span><span id="resultTitle"></span></div>
       <div class="result-msg" id="resultMsg"></div>
       <div class="result-addr" id="resultAddr" style="display:none;"></div>
-      <div id="passo2block" style="display:none; margin-top:18px; padding:16px; border-radius:12px; background:rgba(0,51,141,0.08); border:1px solid rgba(0,51,141,0.3);">
-        <div style="font-family:'Space Grotesk',sans-serif; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:#4A7FD4; font-weight:600; margin-bottom:8px;">Passo 2 — Contratar</div>
-        <div style="font-size:14px; color:var(--text); margin-bottom:12px;">Fale com um consultor agora e finalize a contratação do seu plano de fibra.</div>
-        <a class="cta-wa" id="ctaWa" href="#" target="_blank" style="display:inline-block;">Falar com consultor no WhatsApp →</a>
-      </div>
+    </div>
+
+    <div class="passo2" id="passo2block">
+      <div class="passo2-label">Passo 2 de 2</div>
+      <div class="passo2-title">Fale com um consultor e contrate agora</div>
+      <div class="passo2-sub">Um especialista TIM vai te atender e finalizar sua contratação.</div>
+      <a class="cta-wa" id="ctaWa" href="#" target="_blank">
+        <svg class="wa-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Falar no WhatsApp
+      </a>
     </div>
   </div>
 
@@ -329,9 +413,6 @@
 </div>
 
 <script>
-// ===== CONFIGURAÇÃO =====
-// Troque pela URL da sua API depois do deploy no Coolify, ex:
-// const API_URL = "https://viabilidade.vonixxsc.com.br";
 const API_URL = "https://viabilidade.vonixxsc.com.br";
 const WHATSAPP_NUMERO = "5541995782046";
 
@@ -351,12 +432,13 @@ async function verificar(){
   const logradouro = logradouroInput.value.trim();
 
   if(cep.length !== 8){
-    cepInput.style.borderColor = '#FF5C5C';
+    cepInput.style.borderColor = '#E30613';
     cepInput.focus();
     return;
   }
 
   result.className = 'result';
+  document.getElementById('passo2block').style.display = 'none';
   btn.disabled = true;
   pulseTrack.className = 'pulse-track active';
   pulseLabel.className = 'pulse-label active';
@@ -365,7 +447,7 @@ async function verificar(){
     const params = new URLSearchParams({ cep, numero, logradouro });
     const resp = await fetch(`${API_URL}/verificar?${params.toString()}`);
     const data = await resp.json();
-    await new Promise(r => setTimeout(r, 600)); // deixa a animação respirar
+    await new Promise(r => setTimeout(r, 600));
     mostrarResultado(data);
   }catch(e){
     mostrarResultado({status:'erro', mensagem:'Não conseguimos consultar agora. Tente novamente em instantes.'});
@@ -382,19 +464,22 @@ function mostrarResultado(data){
   const msg = document.getElementById('resultMsg');
   const addr = document.getElementById('resultAddr');
   const ctaWa = document.getElementById('ctaWa');
+  const passo2 = document.getElementById('passo2block');
+  const chip1 = document.getElementById('chip1');
+  const chip2 = document.getElementById('chip2');
 
   let cls = 'no';
   let titleText = 'Sem cobertura por aqui';
 
   if(data.status === 'viavel'){
     cls = 'ok';
-    titleText = 'Endereço viável';
+    titleText = 'Endereço com cobertura confirmada!';
   } else if(data.status === 'regiao_parcial'){
     cls = 'partial';
-    titleText = 'Região coberta — confirmando endereço';
+    titleText = 'Região coberta — confirmando número';
   } else if(data.status === 'erro'){
     cls = 'no';
-    titleText = 'Não entendi o CEP';
+    titleText = 'CEP não encontrado';
   }
 
   result.className = 'result active ' + cls;
@@ -410,12 +495,8 @@ function mostrarResultado(data){
     addr.style.display = 'none';
   }
 
-  const passo2 = document.getElementById('passo2block');
-  const chip1 = document.getElementById('chip1');
-  const chip2 = document.getElementById('chip2');
-
   if(data.status === 'viavel' || data.status === 'regiao_parcial'){
-    const texto = encodeURIComponent(`Olá! Verifiquei no site e meu endereço tem viabilidade de fibra. Quero saber mais sobre os planos.`);
+    const texto = encodeURIComponent(`Olá! Verifiquei no site e meu endereço tem disponibilidade de fibra TIM. Quero contratar!`);
     ctaWa.href = `https://wa.me/${WHATSAPP_NUMERO}?text=${texto}`;
     passo2.style.display = 'block';
     chip1.classList.remove('active');
