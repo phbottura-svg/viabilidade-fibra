@@ -5,10 +5,15 @@ Verifica se um endereço (CEP + número) está dentro da área viável.
 import sqlite3
 import re
 import os
-from fastapi import FastAPI, Query
+import uuid
+import time
+import hashlib
+import httpx
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 
 DB_PATH = os.environ.get("DB_PATH", "/data/db/cobertura.db")
 
@@ -116,6 +121,45 @@ def verificar(
             "mensagem": "Ainda não chegamos nessa região, mas podemos te avisar assim que a rede expandir."
         }
 
+
+CAPI_TOKEN = "EAAOjhyjZCcF8BR7l977I98EALwlEpisbiLoCNd3N9ZCGAhZBwvIZAZCzH0wZBZBzZCdhjGdeZCH1OEl1SCAJLd4GZAJZCDpkrioaQB3Ga84tZCoo47oXC5umspuOaqZAOFysS3EqIBBw7fqJDkIDQAijJs1RkA6zn8Ib80WqZBD8kLSTNZBIrIRWf6EekSYJfpMbciuCy2e7wZDZD"
+PIXEL_ID = "1747146199969241"
+
+class CAPIEvent(BaseModel):
+    event_name: str
+    cep: str = ""
+
+@app.post("/capi")
+async def capi(payload: CAPIEvent, request: Request):
+    ip = request.headers.get("x-forwarded-for", request.client.host).split(",")[0].strip()
+    user_agent = request.headers.get("user-agent", "")
+
+    user_data = {
+        "client_ip_address": ip,
+        "client_user_agent": user_agent,
+    }
+    if payload.cep:
+        cep_limpo = re.sub(r'\D', '', payload.cep)
+        if cep_limpo:
+            user_data["zp"] = hashlib.sha256(cep_limpo.encode()).hexdigest()
+
+    event = {
+        "event_name": payload.event_name,
+        "event_time": int(time.time()),
+        "event_id": str(uuid.uuid4()),
+        "action_source": "website",
+        "event_source_url": str(request.headers.get("referer", "https://viabilidade.vonixxsc.com.br")),
+        "user_data": user_data,
+    }
+
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            f"https://graph.facebook.com/v19.0/{PIXEL_ID}/events",
+            params={"access_token": CAPI_TOKEN},
+            json={"data": [event]},
+            timeout=10,
+        )
+    return resp.json()
 
 @app.get("/health")
 def health():
