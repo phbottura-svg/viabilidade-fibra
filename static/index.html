@@ -521,8 +521,13 @@ function mostrarResultado(data){
   }
 
   if(data.status === 'viavel' || data.status === 'regiao_parcial'){
-    const texto = encodeURIComponent(`Olá! Verifiquei no site e meu endereço tem disponibilidade de fibra TIM. Quero contratar!`);
-    ctaWa.href = `https://wa.me/${WHATSAPP_NUMERO}?text=${texto}`;
+    const e = data.endereco || {};
+    const linha1 = [e.logradouro, e.numero].filter(Boolean).join(' · ');
+    const linha2 = [e.bairro, e.municipio, e.uf].filter(Boolean).join(' · ');
+    const cepFmt = (e.cep || document.getElementById('cep').value.replace(/\D/g,'')).replace(/(\d{5})(\d{3})/,'$1-$2');
+    const status = data.status === 'viavel' ? '*Com cobertura confirmada.*' : '*Região com cobertura — aguardando confirmação do número.*';
+    const msg = `Olá! Verifiquei no site e meu endereço tem disponibilidade de fibra TIM e quero contratar!\n\n${linha1}\n${linha2}\nCEP ${cepFmt}\n\n${status}`;
+    ctaWa.href = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(msg)}`;
     passo2.style.display = 'block';
     chip1.classList.remove('active');
     chip2.classList.add('active');
