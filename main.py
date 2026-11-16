@@ -63,34 +63,39 @@ def verificar(
     )
     rows = cur.fetchall()
 
-    match_type = "exato_cep_numero"
-
-    # 2) Se não achou e veio logradouro, tenta CEP + logradouro normalizado (ignora numero exato,
-    #    pega o numero mais próximo na mesma rua/CEP)
-    if not rows and logradouro:
-        logr_norm = normalize_logradouro(logradouro)
-        cur.execute(
-            "SELECT * FROM enderecos WHERE cep = ? AND logradouro_norm = ? AND viabilidade = 1",
-            (cep_clean, logr_norm)
-        )
-        candidatos = cur.fetchall()
-        if candidatos:
-            rows = candidatos
-            match_type = "aproximado_rua"
-
-    # 3) Se ainda não achou, tenta só pelo CEP: a rua tem fibra, mas aquele
-    #    número não está cadastrado. Devolve o logradouro para a tela poder
-    #    mostrá-lo igual ao caso viável — é a informação que o consultor usa
-    #    para cadastrar a fachada.
-    #    98,4% dos CEPs da base têm uma única rua; nos poucos com mais de uma,
-    #    fica a que tem mais endereços cadastrados.
+    # 2) Número não cadastrado: a rua tem fibra, mas aquela fachada não está
+    #    na base. Devolve o logradouro para a tela mostrá-lo igual ao caso
+    #    viável — é a informação com que o consultor cadastra a fachada.
+    #
+    #    Só o número EXATO confirma viabilidade. Antes, quando o visitante
+    #    digitava a rua, qualquer endereço dela servia de resposta: quem
+    #    procurava o 1869 recebia "cobertura confirmada" exibindo o 866. Isso
+    #    é falso positivo — gera lead que o técnico não consegue instalar.
+    #
+    #    A rua digitada ainda é usada, mas só para escolher QUAL rua mostrar
+    #    nos poucos CEPs com mais de uma (1,6% da base). Sem ela, fica a rua
+    #    com mais endereços cadastrados no CEP.
     regiao_tem_cobertura = False
+    cep_corrigido = None
     if not rows:
+        parametros = [cep_clean]
+        filtro_rua = ""
+        if logradouro:
+            logr_norm = normalize_logradouro(logradouro)
+            cur.execute(
+                "SELECT 1 FROM enderecos WHERE cep = ? AND logradouro_norm = ? "
+                "AND viabilidade = 1 LIMIT 1",
+                (cep_clean, logr_norm)
+            )
+            if cur.fetchone():
+                filtro_rua = "AND logradouro_norm = ? "
+                parametros.append(logr_norm)
+
         cur.execute(
-            "SELECT COUNT(*) as n, logradouro, bairro, municipio, uf "
-            "FROM enderecos WHERE cep = ? AND viabilidade = 1 "
-            "GROUP BY logradouro ORDER BY n DESC LIMIT 1",
-            (cep_clean,)
+            "SELECT COUNT(*) as n, logradouro, logradouro_norm, bairro, municipio, uf "
+            "FROM enderecos WHERE cep = ? " + filtro_rua +
+            "AND viabilidade = 1 GROUP BY logradouro ORDER BY n DESC LIMIT 1",
+            parametros
         )
         r = cur.fetchone()
         if r and r["n"] > 0:
@@ -100,13 +105,52 @@ def verificar(
             bairro = r["bairro"]
             uf_cep = r["uf"]
 
+            # 3) Ruas longas são fatiadas em vários CEPs por faixa de número, e
+            #    o visitante costuma digitar o CEP de outra faixa. Ex.: Rua das
+            #    Carmelitas em Curitiba tem 81610070 (0-975), 81650060
+            #    (1036-3189) e 81730050 (3233-5410) — quem mora no 1869 e
+            #    digita o primeiro tem o endereço atendido, só sob outro CEP.
+            #    Procura o mesmo número na mesma rua e cidade, em outro CEP.
+            #
+            #    Só aceita quando UM único CEP responde: 99,79% das
+            #    combinações (cidade, rua, número) existem num CEP só; no
+            #    resto há ruas homônimas, e aí é mais honesto cair no
+            #    "cadastrar fachada" do que apontar o CEP errado.
+            cur.execute(
+                "SELECT DISTINCT cep FROM enderecos "
+                "WHERE municipio = ? AND logradouro_norm = ? AND numero = ? "
+                "AND viabilidade = 1 LIMIT 2",
+                (municipio, r["logradouro_norm"], str(numero).strip())
+            )
+            outros = cur.fetchall()
+            if len(outros) == 1:
+                cur.execute(
+                    "SELECT * FROM enderecos WHERE cep = ? AND numero = ? "
+                    "AND viabilidade = 1 LIMIT 1",
+                    (outros[0]["cep"], str(numero).strip())
+                )
+                achado = cur.fetchone()
+                if achado:
+                    rows = [achado]
+                    cep_corrigido = outros[0]["cep"]
+
     conn.close()
 
     if rows:
         r = rows[0]
+        if cep_corrigido:
+            cep_fmt = f"{cep_corrigido[:5]}-{cep_corrigido[5:]}"
+            mensagem = (
+                "Endereço com viabilidade técnica confirmada! 🎉 "
+                f"Atenção: o CEP deste número é {cep_fmt}."
+            )
+        else:
+            mensagem = "Endereço com viabilidade técnica confirmada! 🎉"
         return {
             "status": "viavel",
-            "match_type": match_type,
+            # Viabilidade só é confirmada pelo número exato. "corrigido_cep"
+            # é o mesmo número achado sob outro CEP da mesma rua.
+            "match_type": "corrigido_cep" if cep_corrigido else "exato_cep_numero",
             "endereco": {
                 "logradouro": r["logradouro"],
                 "numero": r["numero"],
@@ -116,7 +160,7 @@ def verificar(
                 "cep": r["cep"],
                 "tipo_lote": r["tipo_lote"]
             },
-            "mensagem": "Endereço com viabilidade técnica confirmada! 🎉"
+            "mensagem": mensagem
         }
     elif regiao_tem_cobertura:
         return {
