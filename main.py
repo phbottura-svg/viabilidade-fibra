@@ -78,18 +78,27 @@ def verificar(
             rows = candidatos
             match_type = "aproximado_rua"
 
-    # 3) Se ainda não achou, tenta só pelo CEP (mostra se a região tem cobertura, mas sem garantir o número exato)
+    # 3) Se ainda não achou, tenta só pelo CEP: a rua tem fibra, mas aquele
+    #    número não está cadastrado. Devolve o logradouro para a tela poder
+    #    mostrá-lo igual ao caso viável — é a informação que o consultor usa
+    #    para cadastrar a fachada.
+    #    98,4% dos CEPs da base têm uma única rua; nos poucos com mais de uma,
+    #    fica a que tem mais endereços cadastrados.
     regiao_tem_cobertura = False
     if not rows:
         cur.execute(
-            "SELECT COUNT(*) as n, MIN(municipio) as municipio, MIN(bairro) as bairro FROM enderecos WHERE cep = ? AND viabilidade = 1",
+            "SELECT COUNT(*) as n, logradouro, bairro, municipio, uf "
+            "FROM enderecos WHERE cep = ? AND viabilidade = 1 "
+            "GROUP BY logradouro ORDER BY n DESC LIMIT 1",
             (cep_clean,)
         )
         r = cur.fetchone()
         if r and r["n"] > 0:
             regiao_tem_cobertura = True
+            logradouro_cep = r["logradouro"]
             municipio = r["municipio"]
             bairro = r["bairro"]
+            uf_cep = r["uf"]
 
     conn.close()
 
@@ -112,8 +121,15 @@ def verificar(
     elif regiao_tem_cobertura:
         return {
             "status": "regiao_parcial",
-            "endereco": {"cep": cep_clean, "municipio": municipio, "bairro": bairro},
-            "mensagem": "A região do seu CEP já tem cobertura, mas não conseguimos confirmar o número exato. Um consultor vai validar manualmente."
+            "endereco": {
+                "cep": cep_clean,
+                "logradouro": logradouro_cep,
+                "numero": str(numero).strip(),
+                "bairro": bairro,
+                "municipio": municipio,
+                "uf": uf_cep
+            },
+            "mensagem": "Rua possui fibra — necessário cadastrar fachada."
         }
     else:
         return {
